@@ -1,0 +1,99 @@
+<html>
+
+<head>
+<link href="AjaxQuiz.css" type="text/css" rel="stylesheet" />
+<script language="javascript" src="ContentLoader.js" type="text/javascript"></script>
+<script language="javascript" src="json2.js" type="text/javascript"></script>
+<script language="javascript">
+	function init()
+	{
+		var quiz=document.getElementById("quizForm");
+		var inputs = quiz.getElementsByTagName("input");
+		for (i=0; i<inputs.length; i++)
+		{
+			inputs[i].onclick=CheckAnswer;
+		}
+	}
+	
+	function Respond()
+	{		
+		if (Math.floor(Math.random(3) * 3) == 1) //creates artificial delay 1 out of 3 times
+		{
+			var resultDiv = this.resultDiv;
+			var output = this.xmlhttp.responseText;
+			setTimeout(function() { resultDiv.innerHTML=output },3000);
+		}
+		else
+		{
+			this.resultDiv.innerHTML=this.xmlhttp.responseText;
+		}
+	}
+	
+	function CheckAnswer(e)
+	{
+		if (!e) e = window.event;
+		var target = e.target || e.srcElement;
+		var q = target.name;
+		var a = target.value;
+		var resultDiv = document.getElementById(q + "Result");
+		/* create a new JSON object with two properties, 'question' and 'answer' */
+		var objQuestion = new Object();
+		objQuestion["question"] = q;
+		objQuestion["answer"] = a;
+		/* call JSON.stringify on the new object to create a JSON object */
+		var jstrObject = JSON.stringify(objQuestion);
+		/* call the JavaScript function encodeURIComponent on the JSON object */
+		var strJSON = encodeURIComponent(jstrObject);
+		
+		resultDiv.innerHTML="checking...";
+		/* var params = {"q":q,"a":a}; */
+		var params = {"strJSON":strJSON};
+		/* get the xmlhttp object by calling ContentLoader with the post method */
+		/* the params will now be an object containing "strJSON" and the JSON object */
+		var xmlhttp = new ContentLoader("AjaxQuiz.jsp","post",Respond,resultDiv,params);
+	}
+	
+	window.onload=init;
+</script>
+<title>Ajax Quiz</title>
+</head>
+
+<body>
+<h1>Ajax Quiz</h1>
+<form onSubmit="return false" id="quizForm">
+<div class="WholeQuestion">
+	<div class="Question">
+		What is 1 + 1?
+	</div>
+	<div class="Answer">
+		<input type="radio" name="q1" value="1" /> 1
+		<input type="radio" name="q1" value="2" /> 2
+		<input type="radio" name="q1" value="3" /> 3
+	</div>
+	<div class="Result" id="q1Result"></div>
+</div>
+<div class="WholeQuestion">
+	<div class="Question">
+		What is 1 + 2?
+	</div>
+	<div class="Answer">
+		<input type="radio" name="q2" value="1" /> 1
+		<input type="radio" name="q2" value="2" /> 2
+		<input type="radio" name="q2" value="3" /> 3
+	</div>
+	<div class="Result" id="q2Result"></div>
+</div>
+<div class="WholeQuestion">
+	<div class="Question">
+		What is 2 - 1?
+	</div>
+	<div class="Answer">
+		<input type="radio" name="q3" value="1" /> 1
+		<input type="radio" name="q3" value="2" /> 2
+		<input type="radio" name="q3" value="3" /> 3
+	</div>
+	<div class="Result" id="q3Result"></div>
+</div>
+</form>
+</body>
+</html>
